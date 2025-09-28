@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      properties:
+        spring.json.trusted.packages: "ru.yandex.practicum.kafka.telemetry.event.*,ru.yandex.practicum.kafka.telemetry.collector.model.*"
+
+logging:
+  level:
+    ru.yandex.practicum.kafka.telemetry.collector: DEBUG
