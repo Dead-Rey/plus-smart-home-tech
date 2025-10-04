@@ -1,7 +1,5 @@
 package ru.yandex.practicum.kafka.telemetry.collector.model;
 
-
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 
 import java.time.Instant;
 
@@ -36,6 +33,19 @@ public abstract class BaseSensorEvent {
     private String hubId;
 
     private Instant timestamp = Instant.now();
+
+
+    public String getId() {
+        return id;
+    }
+
+    public String getHubId() {
+        return hubId;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 
     @NotNull
     public abstract SensorEventType getType();

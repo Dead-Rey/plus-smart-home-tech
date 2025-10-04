@@ -30,20 +30,23 @@ public class EventProcessingService {
     @Async
     public void processSensorEvent(BaseSensorEvent event) {
         try {
+            log.info("Processing sensor event: type={}, id={}, hubId={}",
+                    event.getType(), event.getId(), event.getHubId());
+
+            // Конвертируем в Avro и отправляем
             SensorEventAvro avroEvent = sensorEventMapper.toAvro(event);
-            CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(SENSORS_TOPIC, event.getHubId(), avroEvent);
+            CompletableFuture<SendResult<String, Object>> future =
+                    kafkaTemplate.send(SENSORS_TOPIC, event.getId(), avroEvent);
 
             future.whenComplete((result, ex) -> {
                 if (ex == null) {
-                    log.debug("Successfully sent sensor event to Kafka. HubId: {}, SensorId: {}",
-                            event.getHubId(), event.getId());
+                    log.info("✅ Successfully sent sensor event to {}. Key: {}", SENSORS_TOPIC, event.getId());
                 } else {
-                    log.error("Failed to send sensor event to Kafka. HubId: {}, SensorId: {}",
-                            event.getHubId(), event.getId(), ex);
+                    log.error("❌ Failed to send sensor event to {}. Key: {}", SENSORS_TOPIC, event.getId(), ex);
                 }
             });
         } catch (Exception e) {
-            log.error("Error processing sensor event. HubId: {}, SensorId: {}",
+            log.error("❌ Error processing sensor event. HubId: {}, SensorId: {}",
                     event.getHubId(), event.getId(), e);
         }
     }
@@ -51,20 +54,22 @@ public class EventProcessingService {
     @Async
     public void processHubEvent(BaseHubEvent event) {
         try {
+            log.info("Processing hub event: type={}, hubId={}", event.getType(), event.getHubId());
+
+            // Конвертируем в Avro и отправляем
             HubEventAvro avroEvent = hubEventMapper.toAvro(event);
-            CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(HUBS_TOPIC, event.getHubId(), avroEvent);
+            CompletableFuture<SendResult<String, Object>> future =
+                    kafkaTemplate.send(HUBS_TOPIC, event.getHubId(), avroEvent);
 
             future.whenComplete((result, ex) -> {
                 if (ex == null) {
-                    log.debug("Successfully sent hub event to Kafka. HubId: {}, Type: {}",
-                            event.getHubId(), event.getType());
+                    log.info("✅ Successfully sent hub event to {}. Key: {}", HUBS_TOPIC, event.getHubId());
                 } else {
-                    log.error("Failed to send hub event to Kafka. HubId: {}, Type: {}",
-                            event.getHubId(), event.getType(), ex);
+                    log.error("❌ Failed to send hub event to {}. Key: {}", HUBS_TOPIC, event.getHubId(), ex);
                 }
             });
         } catch (Exception e) {
-            log.error("Error processing hub event. HubId: {}, Type: {}",
+            log.error("❌ Error processing hub event. HubId: {}, Type: {}",
                     event.getHubId(), event.getType(), e);
         }
     }

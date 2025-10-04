@@ -4,9 +4,10 @@ server:
 spring:
   kafka:
     bootstrap-servers: localhost:9092
-    producer:
-      properties:
-        spring.json.trusted.packages: "ru.yandex.practicum.kafka.telemetry.event.*,ru.yandex.practicum.kafka.telemetry.collector.model.*"
+    properties:
+      schema.registry.url: http://localhost:8081
+      specific.avro.reader: true
+      auto.register.schemas: true
 
 logging:
   level:
