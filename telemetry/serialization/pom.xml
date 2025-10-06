@@ -18,29 +18,4 @@
         <module>proto-schemas</module>
     </modules>
 
-<build>
-    <pluginManagement>
-        <plugins>
-    <plugin>
-        <groupId>org.apache.avro</groupId>
-        <artifactId>avro-maven-plugin</artifactId>
-        <version>1.11.3</version>
-        <configuration>
-            <stringType>String</stringType>
-            <fieldVisibility>private</fieldVisibility>
-            <enableDecimalLogicalType>true</enableDecimalLogicalType>
-        </configuration>
-        <executions>
-            <execution>
-                <phase>generate-sources</phase>
-                <goals>
-                    <goal>schema</goal>
-                </goals>
-            </execution>
-        </executions>
-    </plugin>
-        </plugins>
-    </pluginManagement>
-</build>
-
 </project>
