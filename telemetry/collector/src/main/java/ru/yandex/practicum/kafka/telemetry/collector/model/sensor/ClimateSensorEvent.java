@@ -10,6 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
+@Deprecated
 public class ClimateSensorEvent extends SensorEvent {
     @NotNull
     private int temperatureC;

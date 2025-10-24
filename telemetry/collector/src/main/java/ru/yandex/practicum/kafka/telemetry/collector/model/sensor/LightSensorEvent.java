@@ -9,6 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
+@Deprecated
 public class LightSensorEvent extends SensorEvent {
     private int linkQuality;
     private int luminosity;
