@@ -53,7 +53,7 @@
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
-            <version>${grpc-spring-boot-starter.version}</version>
+            <version>3.1.0.RELEASE</version>
         </dependency>
 
         <dependency>

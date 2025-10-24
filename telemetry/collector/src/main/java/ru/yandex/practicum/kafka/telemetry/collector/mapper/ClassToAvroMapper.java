@@ -21,7 +21,7 @@ public class ClassToAvroMapper {
                 .setType(ConditionTypeAvro.valueOf(condition.getType().name()))
                 .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name()));
 
-        // Обработка oneof value
+        // Обработка one of value
         if (condition.hasBoolValue()) {
             builder.setValue(condition.getBoolValue());  // boolean
         } else if (condition.hasIntValue()) {

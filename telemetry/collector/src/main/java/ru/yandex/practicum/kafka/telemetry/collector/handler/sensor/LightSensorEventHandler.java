@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.grpc.telemetry.event.LightSensorProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.kafka.telemetry.collector.handler.KafkaEventProducer;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
-import ru.yandex.practicum.telemetry.collector.service.handler.KafkaEventProducer;
 
 @Service
 public class LightSensorEventHandler extends BaseSensorEventHandler<LightSensorAvro> {

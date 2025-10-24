@@ -4,11 +4,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.ScenarioAddedEventProto;
+import ru.yandex.practicum.kafka.telemetry.collector.handler.KafkaEventProducer;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
-import ru.yandex.practicum.telemetry.collector.service.handler.KafkaEventProducer;
 
-import static ru.yandex.practicum.telemetry.collector.service.handler.hub.mapper.ClassToAvroMapper.mapActionsToAvro;
-import static ru.yandex.practicum.telemetry.collector.service.handler.hub.mapper.ClassToAvroMapper.mapConditionsToAvro;
+import static ru.yandex.practicum.kafka.telemetry.collector.mapper.ClassToAvroMapper.mapActionsToAvro;
+import static ru.yandex.practicum.kafka.telemetry.collector.mapper.ClassToAvroMapper.mapConditionsToAvro;
+
 
 @Service
 public class ScenarioAddedHubEventHandler extends BaseHubEventHandler<ScenarioAddedEventAvro> {

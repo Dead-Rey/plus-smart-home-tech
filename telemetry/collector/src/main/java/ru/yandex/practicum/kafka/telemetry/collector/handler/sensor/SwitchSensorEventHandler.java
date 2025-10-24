@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SwitchSensorProto;
+import ru.yandex.practicum.kafka.telemetry.collector.handler.KafkaEventProducer;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
-import ru.yandex.practicum.telemetry.collector.model.sensor.SensorEventType;
-import ru.yandex.practicum.telemetry.collector.service.handler.KafkaEventProducer;
 
 @Service
 public class SwitchSensorEventHandler extends BaseSensorEventHandler<SwitchSensorAvro> {
