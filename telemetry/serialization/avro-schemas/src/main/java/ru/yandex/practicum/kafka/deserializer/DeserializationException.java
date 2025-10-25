@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kafka.serializer;
+package ru.yandex.practicum.kafka.deserializer;
 
 
 public class DeserializationException extends RuntimeException {
