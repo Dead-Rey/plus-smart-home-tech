@@ -11,6 +11,7 @@ import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.collector.handler.hub.HubEventHandler;
 import ru.yandex.practicum.kafka.telemetry.collector.handler.sensor.SensorEventHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 import java.util.Map;
