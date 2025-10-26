@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class SnapshotServiceImpl implements SnapshotService{

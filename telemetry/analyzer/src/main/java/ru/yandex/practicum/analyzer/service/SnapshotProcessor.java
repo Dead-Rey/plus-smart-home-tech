@@ -95,7 +95,7 @@ public class SnapshotProcessor {
     }
 
     @Transactional
-    private void handleRecord(SensorsSnapshotAvro sensorsSnapshotAvro) {
+    public void handleRecord(SensorsSnapshotAvro sensorsSnapshotAvro) {
         try {
             String hubId = sensorsSnapshotAvro.getHubId();
             List<Scenario> scenarios = snapshotAnalyzer.analyze(hubId, sensorsSnapshotAvro);
@@ -104,6 +104,7 @@ public class SnapshotProcessor {
             }
         } catch (Exception e) {
             log.error("Ошибка обработки события {}", sensorsSnapshotAvro, e);
+            throw new RuntimeException("Ошибка при обработке сценариев", e);
         }
     }
 }
