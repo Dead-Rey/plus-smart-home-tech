@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public interface WarehouseProductRepository extends JpaRepository<WarehouseProductEntity, UUID> {
 
     Optional<WarehouseProductEntity> findByProductId(UUID productId);

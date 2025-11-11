@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/shopping-store")
 @RequiredArgsConstructor
-@Validated
 public class ShoppingStoreController implements ShoppingStoreOperations {
     private final ShoppingStoreService shoppingStoreService;
 

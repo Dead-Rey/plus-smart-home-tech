@@ -63,25 +63,44 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             throw new RuntimeException("Product availability check failed: " + e.getMessage(), e);
         }
 
+        // Получаем все существующие товары в корзине за один запрос
+        List<UUID> productIds = new ArrayList<>(products.keySet());
+        List<ShoppingCartItemEntity> existingItems = shoppingCartItemRepository
+                .findByShoppingCart_ShoppingCartIdAndProductIdIn(shoppingCart.getShoppingCartId(), productIds);
+
+        Map<UUID, ShoppingCartItemEntity> existingItemsMap = existingItems.stream()
+                .collect(Collectors.toMap(ShoppingCartItemEntity::getProductId, item -> item));
+
+        List<ShoppingCartItemEntity> itemsToSave = new ArrayList<>();
+        List<ShoppingCartItemEntity> itemsToUpdate = new ArrayList<>();
+
         for (Map.Entry<UUID, Integer> entry : products.entrySet()) {
             UUID productId = entry.getKey();
             Integer quantity = entry.getValue();
 
-            Optional<ShoppingCartItemEntity> existingItem = shoppingCartItemRepository
-                    .findByShoppingCart_ShoppingCartIdAndProductId(shoppingCart.getShoppingCartId(), productId);
+            ShoppingCartItemEntity existingItem = existingItemsMap.get(productId);
 
-            if (existingItem.isPresent()) {
+            if (existingItem != null) {
                 // Обновляем количество существующего товара
-                ShoppingCartItemEntity item = existingItem.get();
-                item.setQuantity(item.getQuantity() + quantity);
-                shoppingCartItemRepository.save(item);
-                log.debug("Updated quantity for product {} in cart: {}", productId, item.getQuantity());
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);
+                itemsToUpdate.add(existingItem);
+                log.debug("Updated quantity for product {} in cart: {}", productId, existingItem.getQuantity());
             } else {
                 // Добавляем новый товар
                 ShoppingCartItemEntity newItem = ShoppingCartMapper.toNewItemEntity(shoppingCart, productId, quantity);
-                shoppingCartItemRepository.save(newItem);
+                itemsToSave.add(newItem);
                 log.debug("Added new product {} to cart with quantity: {}", productId, quantity);
             }
+        }
+
+        // Пакетное сохранение новых товаров
+        if (!itemsToSave.isEmpty()) {
+            shoppingCartItemRepository.saveAll(itemsToSave);
+        }
+
+        // Пакетное обновление существующих товаров
+        if (!itemsToUpdate.isEmpty()) {
+            shoppingCartItemRepository.saveAll(itemsToUpdate);
         }
 
         List<ShoppingCartItemEntity> updatedItems = shoppingCartItemRepository

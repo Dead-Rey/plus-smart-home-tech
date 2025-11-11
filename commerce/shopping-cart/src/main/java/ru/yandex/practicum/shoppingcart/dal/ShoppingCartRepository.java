@@ -11,7 +11,6 @@ import ru.yandex.practicum.shoppingcart.model.ShoppingCartState;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCartEntity, UUID> {
 
     Optional<ShoppingCartEntity> findByUsernameAndCartState(String username, ShoppingCartState cartState);

@@ -11,7 +11,6 @@ import ru.yandex.practicum.shoppingstore.model.ProductEntity;
 
 import java.util.UUID;
 
-@Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
 
     Page<ProductEntity> findByProductCategoryAndProductState(

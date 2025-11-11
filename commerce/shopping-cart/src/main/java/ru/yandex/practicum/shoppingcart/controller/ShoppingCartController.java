@@ -17,7 +17,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/shopping-cart")
 @RequiredArgsConstructor
-@Validated
 public class ShoppingCartController implements ShoppingCartOperations {
 
     private final ShoppingCartService shoppingCartService;
