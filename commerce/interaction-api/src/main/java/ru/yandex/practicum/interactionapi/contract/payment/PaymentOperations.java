@@ -1,0 +1,26 @@
+package ru.yandex.practicum.interactionapi.contract.payment;
+
+
+import ru.yandex.practicum.interactionapi.dto.order.OrderDto;
+import ru.yandex.practicum.interactionapi.dto.payment.PaymentDto;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public interface PaymentOperations {
+
+    // Рассчитать стоимость товаров в заказе
+    BigDecimal productCost(OrderDto orderDto);
+
+    // Расчёт полной стоимости заказа
+    BigDecimal getTotalCost(OrderDto orderDto);
+
+    // Формирование оплаты для заказа (переход в платежный шлюз)
+    PaymentDto payment(OrderDto orderDto);
+
+    // Метод для эмуляции успешной оплаты в платежного шлюза
+    void paymentSuccess(UUID paymentId);
+
+    // Метод для эмуляции отказа в оплате платежного шлюза
+    void paymentFailed(UUID paymentId);
+}
