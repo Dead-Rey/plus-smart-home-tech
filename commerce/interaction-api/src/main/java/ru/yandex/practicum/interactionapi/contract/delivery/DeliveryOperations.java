@@ -13,9 +13,6 @@ public interface DeliveryOperations {
     // Создать новую доставку в БД
     DeliveryDto delivery(DeliveryDto deliveryDto);
 
-    // Расчёт полной стоимости доставки заказа
-    BigDecimal deliveryCost(SpringDataJaxb.OrderDto orderDto);
-
     // Эмуляция получения товара в доставку
     void deliveryPicked(UUID orderId);
 
