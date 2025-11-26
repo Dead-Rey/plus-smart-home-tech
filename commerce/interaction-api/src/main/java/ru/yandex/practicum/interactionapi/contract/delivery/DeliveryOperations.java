@@ -1,9 +1,7 @@
 package ru.yandex.practicum.interactionapi.contract.delivery;
 
-
-
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import ru.yandex.practicum.interactionapi.dto.delivery.DeliveryDto;
+import ru.yandex.practicum.interactionapi.dto.order.OrderDto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -21,4 +19,7 @@ public interface DeliveryOperations {
 
     // Эмуляция неудачного вручения товара
     void deliveryFailed(UUID orderId);
+
+    // Расчёт полной стоимости доставки заказа
+    BigDecimal deliveryCost(OrderDto orderDto);
 }

@@ -1,8 +1,8 @@
 package ru.yandex.practicum.delivery.service;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.delivery.dal.DeliveryRepository;
@@ -61,7 +61,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
-    public BigDecimal calculateDeliveryCost(SpringDataJaxb.OrderDto orderDto) {
+    public BigDecimal calculateDeliveryCost(OrderDto orderDto) {
         log.info("Calculating delivery cost for order: {}", orderDto.getOrderId());
 
         // Получаем адрес склада
@@ -83,7 +83,8 @@ public class DeliveryServiceImpl implements DeliveryService {
                 orderDto.getDeliveryWeight() != null ? orderDto.getDeliveryWeight() : 0.0,
                 orderDto.getDeliveryVolume() != null ? orderDto.getDeliveryVolume() : 0.0,
                 orderDto.getFragile() != null ? orderDto.getFragile() : false,
-                deliveryStreet
+                deliveryStreet,
+                orderDto.getOrderId()  // Добавляем ID заказа
         );
 
         // Сохраняем рассчитанную стоимость в БД
@@ -222,44 +223,81 @@ public class DeliveryServiceImpl implements DeliveryService {
                                                       Double weight,
                                                       Double volume,
                                                       Boolean fragile,
-                                                      String deliveryStreet) {
-        BigDecimal cost = BASE_COST;
+                                                      String deliveryStreet,
+                                                      @NotNull UUID orderId) { // Добавляем ID заказа
 
-        // Умножаем базовую стоимость на число, зависящее от адреса склада
+        // Логируем начало расчета и входные параметры
+        log.info("🚚 CALCULATION STARTED for orderId: {}. Params: warehouse='{}', weight={}, volume={}, fragile={}, deliveryStreet='{}'",
+                orderId, warehouseAddress, weight, volume, fragile, deliveryStreet);
+
+        BigDecimal cost = BASE_COST;
+        log.debug("OrderId: {}. Step 1 - Base cost initialized: {}", orderId, BASE_COST);
+
+        // Расчет множителя адреса склада
         BigDecimal addressMultiplier;
         if (warehouseAddress.contains("ADDRESS_1")) {
             addressMultiplier = BigDecimal.ONE;
+            log.debug("OrderId: {}. Step 2 - Using ADDRESS_1 multiplier: {}", orderId, addressMultiplier);
         } else if (warehouseAddress.contains("ADDRESS_2")) {
             addressMultiplier = new BigDecimal("2");
+            log.debug("OrderId: {}. Step 2 - Using ADDRESS_2 multiplier: {}", orderId, addressMultiplier);
         } else {
-            addressMultiplier = BigDecimal.ONE; // по умолчанию
+            addressMultiplier = BigDecimal.ONE;
+            log.warn("OrderId: {}. Step 2 - Unknown warehouse address '{}', using default multiplier: {}",
+                    orderId, warehouseAddress, addressMultiplier);
         }
 
-        cost = cost.multiply(addressMultiplier).add(BASE_COST);
+        BigDecimal costAfterAddress = cost.multiply(addressMultiplier).add(BASE_COST);
+        log.debug("OrderId: {}. Step 2 - Cost after address calculation: {} (formula: {} * {} + {} = {})",
+                orderId, costAfterAddress, cost, addressMultiplier, BASE_COST, costAfterAddress);
+        cost = costAfterAddress;
 
-        // Если товар хрупкий
+        // Расчет для хрупких товаров
         if (fragile != null && fragile) {
             BigDecimal fragileCost = cost.multiply(FRAGILE_MULTIPLIER);
+            log.debug("OrderId: {}. Step 3 - Adding fragile cost: {} (formula: {} * {} = {})",
+                    orderId, fragileCost, cost, FRAGILE_MULTIPLIER, fragileCost);
             cost = cost.add(fragileCost);
+            log.debug("OrderId: {}. Step 3 - Cost after fragile addition: {}", orderId, cost);
+        } else {
+            log.debug("OrderId: {}. Step 3 - No fragile cost added (fragile={})", orderId, fragile);
         }
 
-        // Добавляем вес
+        // Расчет веса
         if (weight != null) {
             BigDecimal weightCost = BigDecimal.valueOf(weight).multiply(WEIGHT_MULTIPLIER);
+            log.debug("OrderId: {}. Step 4 - Adding weight cost: {} (formula: {} * {} = {})",
+                    orderId, weightCost, weight, WEIGHT_MULTIPLIER, weightCost);
             cost = cost.add(weightCost);
+            log.debug("OrderId: {}. Step 4 - Cost after weight addition: {}", orderId, cost);
+        } else {
+            log.debug("OrderId: {}. Step 4 - No weight cost added (weight=null)", orderId);
         }
 
-        // Добавляем объем
+        // Расчет объема
         if (volume != null) {
             BigDecimal volumeCost = BigDecimal.valueOf(volume).multiply(VOLUME_MULTIPLIER);
+            log.debug("OrderId: {}. Step 5 - Adding volume cost: {} (formula: {} * {} = {})",
+                    orderId, volumeCost, volume, VOLUME_MULTIPLIER, volumeCost);
             cost = cost.add(volumeCost);
+            log.debug("OrderId: {}. Step 5 - Cost after volume addition: {}", orderId, cost);
+        } else {
+            log.debug("OrderId: {}. Step 5 - No volume cost added (volume=null)", orderId);
         }
 
-        // Учитываем адрес доставки (если улица доставки не совпадает с адресом склада)
+        // Расчет стоимости доставки по адресу
         if (deliveryStreet != null && !deliveryStreet.isEmpty() && !deliveryStreet.equals(warehouseAddress)) {
             BigDecimal addressCost = cost.multiply(ADDRESS_MULTIPLIER);
+            log.debug("OrderId: {}. Step 6 - Adding delivery address cost: {} (formula: {} * {} = {})",
+                    orderId, addressCost, cost, ADDRESS_MULTIPLIER, addressCost);
             cost = cost.add(addressCost);
+            log.debug("OrderId: {}. Step 6 - Cost after address addition: {}", orderId, cost);
+        } else {
+            log.debug("OrderId: {}. Step 6 - No delivery address cost added (same address or empty)", orderId);
         }
+
+        // Финальное логирование результата
+        log.info("CALCULATION COMPLETED for orderId: {}. Final delivery cost: {}", orderId, cost);
 
         return cost;
     }
